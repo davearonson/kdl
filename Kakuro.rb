@@ -113,7 +113,7 @@ module Kakuro
       @rows = 0
       @problems = []
       if name != nil
-        f = File.new name, "r"
+        f = File.new name, 'r'
         while not f.eof?
           line = f.readline.strip
           next if line == ''
@@ -195,11 +195,11 @@ module Kakuro
     end
 
     def to_s withDigits=false
-      result = ["_"]
+      result = ['_']
       # TODO: isn't there some way to say just x.times str?
-      @columns.times { result[0] += "____" }
+      @columns.times { result[0] += '____' }
       @rows.times { |y|
-        lines = ["|","|","|"]
+        lines = ['|','|','|']
         @columns.times { |x|
           # remember, Space.to_s returns an ARRAY!
           spStr = get_space(x, y).to_s withDigits
@@ -257,32 +257,32 @@ module Kakuro
       end
 
       def to_s withDigits=false
-          rep = [ "", "", "" ]
+          rep = [ '', '', '' ]
           if @kind == DIGIT
               if withDigits
                   if @digits.size == 1
-                      rep[0] = " | |"
-                      rep[1] = "-" + @digits.to_a[0].to_s + "-|"
-                      rep[2] = "_|_|"
+                      rep[0] = ' | |'
+                      rep[1] = '-' + @digits.to_a[0].to_s + '-|'
+                      rep[2] = '_|_|'
                   else
-                      rep[0] = "   |"
-                      rep[1] = "   |"
-                      rep[2] = "___|"
+                      rep[0] = '   |'
+                      rep[1] = '   |'
+                      rep[2] = '___|'
                       @digits.each { |digit|
                           rep[(digit-1)/3][(digit-1)%3] = digit.to_s
                       }
                   end
               else
-                  rep = [ "   |", "   |", "___|" ]
+                  rep = [ '   |', '   |', '___|' ]
               end
           elsif @kind == BLANK
               rep[0] = rep[1] = rep[2] = '***|'
           elsif @kind == HEADER
-              rep[0] = "\\  |" if @across == nil
+              rep[0] = '\\  |' if @across == nil
               rep[0] = "\\%2d|" % @across if @across != nil
-              rep[1] = " \\ |"
+              rep[1] = ' \\ |'
               if @down == nil
-                  rep[2] = "__\\|"
+                  rep[2] = '__\\|'
               elsif @down < 10
                   rep[2] = "_%d\\|" % @down
               else
