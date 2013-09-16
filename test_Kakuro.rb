@@ -1,8 +1,8 @@
 #! /usr/bin/ruby
 
-require 'Kakuro'
+require_relative './Kakuro'
 
-require 'Test/Unit'
+require 'test/unit'
 
 class TC_MyTest < Test::Unit::TestCase
 
@@ -16,12 +16,12 @@ class TC_MyTest < Test::Unit::TestCase
     # helpers
 
     def helper_inspectProblem prob, x, y, dir, len, sum
-        assert_equal x, prob.getX
-        assert_equal y, prob.getY
-        assert_equal dir, prob.getDir
-        assert_equal len, prob.getLen
-        assert_equal len, prob.getSpaces.size
-        assert_equal sum, prob.getSum
+        assert_equal x, prob.get_x
+        assert_equal y, prob.get_y
+        assert_equal dir, prob.get_dir
+        assert_equal len, prob.get_len
+        assert_equal len, prob.get_spaces.size
+        assert_equal sum, prob.get_sum
     end
 
 
@@ -34,22 +34,22 @@ class TC_MyTest < Test::Unit::TestCase
 
     def test_Kakuro_Puzzle_initialize
         p = Kakuro::Puzzle.new
-        assert_equal  0, p.getColumns
-        assert_equal [], p.getProblems
-        assert_equal  0, p.getRows
+        assert_equal  0, p.get_columns
+        assert_equal [], p.get_problems
+        assert_equal  0, p.get_rows
     end
 
     def test_Kakuro_Puzzle_addProblem
         p = Kakuro::Puzzle.new
-        p.addProblem 1, 2, Kakuro::DOWN, 3, 6
-        assert_equal 1, p.getProblems.size
-        assert_equal 2, p.getColumns
-        assert_equal 5, p.getRows
-        p.addProblem 1, 2, Kakuro::ACROSS, 3, 6
-        assert_equal 2, p.getProblems.size
-        assert_equal 4, p.getColumns
-        assert_equal 5, p.getRows
-        helper_inspectProblem p.getProblem(0), 1, 2, Kakuro::DOWN, 3, 6
+        p.add_problem 1, 2, Kakuro::DOWN, 3, 6
+        assert_equal 1, p.get_problems.size
+        assert_equal 2, p.get_columns
+        assert_equal 5, p.get_rows
+        p.add_problem 1, 2, Kakuro::ACROSS, 3, 6
+        assert_equal 2, p.get_problems.size
+        assert_equal 4, p.get_columns
+        assert_equal 5, p.get_rows
+        helper_inspectProblem p.get_problem(0), 1, 2, Kakuro::DOWN, 3, 6
     end
 
     def test_Kakuro_Puzzle_fromFile_and_to_kdl
@@ -66,21 +66,21 @@ class TC_MyTest < Test::Unit::TestCase
         f1.write old_kdl.join("\n")
         f1.close
         puzz = Kakuro::Puzzle.new fileName
-        assert_equal 6, puzz.getProblems.size
-        helper_inspectProblem puzz.getProblem(0), 2, 1, Kakuro::ACROSS, 3, 6
-        helper_inspectProblem puzz.getProblem(1), 2, 2, Kakuro::ACROSS, 3, 7
-        helper_inspectProblem puzz.getProblem(2), 3, 3, Kakuro::ACROSS, 2, 10
-        helper_inspectProblem puzz.getProblem(3), 2, 1, Kakuro::DOWN, 2, 3
-        helper_inspectProblem puzz.getProblem(4), 3, 1, Kakuro::DOWN, 3, 7
-        helper_inspectProblem puzz.getProblem(5), 4, 1, Kakuro::DOWN, 3, 13
-        puzz.getProblems.each { |prob|
-            assert_not_nil prob.getSpaces
-            prob.getSpaces.each { |s|
+        assert_equal 6, puzz.get_problems.size
+        helper_inspectProblem puzz.get_problem(0), 2, 1, Kakuro::ACROSS, 3, 6
+        helper_inspectProblem puzz.get_problem(1), 2, 2, Kakuro::ACROSS, 3, 7
+        helper_inspectProblem puzz.get_problem(2), 3, 3, Kakuro::ACROSS, 2, 10
+        helper_inspectProblem puzz.get_problem(3), 2, 1, Kakuro::DOWN, 2, 3
+        helper_inspectProblem puzz.get_problem(4), 3, 1, Kakuro::DOWN, 3, 7
+        helper_inspectProblem puzz.get_problem(5), 4, 1, Kakuro::DOWN, 3, 13
+        puzz.get_problems.each { |prob|
+            assert_not_nil prob.get_spaces
+            prob.get_spaces.each { |s|
                 assert_not_nil s
                 assert_equal prob, \
-                             prob.getDir == Kakuro::DOWN ? s.getDown : \
-                                                           s.getAcross
-                assert_equal Kakuro::AllDigits, s.getDigits
+                             prob.get_dir == Kakuro::DOWN ? s.get_down : \
+                                                           s.get_across
+                assert_equal Kakuro::AllDigits, s.get_digits
             }
         }
         new_kdl = puzz.to_kdl.split "\n"
@@ -141,42 +141,42 @@ class TC_MyTest < Test::Unit::TestCase
                        "***|",\
                        "***|" ],\
                      s.to_s
-        s.setKind Kakuro::Space::DIGIT
+        s.set_kind Kakuro::Space::DIGIT
         assert_equal [ "   |",\
                        "   |",\
                        "___|" ],\
                      s.to_s(false)
-        s.setDigits Kakuro::AllDigits.clone
+        s.set_digits Kakuro::AllDigits.clone
         assert_equal [ "123|",\
                        "456|",\
                        "789|" ],\
                      s.to_s(true)
-        s.setDigits Set.new([1,3,5,7,9])
+        s.set_digits Set.new([1,3,5,7,9])
         assert_equal [ "1 3|",\
                        " 5 |",\
                        "7_9|" ],\
                      s.to_s(true)
-        s.setKind Kakuro::Space::HEADER
+        s.set_kind Kakuro::Space::HEADER
         assert_equal [ "\\  |",\
                        " \\ |",\
                        "__\\|" ],\
                      s.to_s
-        s.setAcross 1
+        s.set_across 1
         assert_equal [ "\\ 1|",\
                        " \\ |",\
                        "__\\|" ],\
                      s.to_s
-        s.setAcross 12
+        s.set_across 12
         assert_equal [ "\\12|",\
                        " \\ |",\
                        "__\\|" ],\
                      s.to_s
-        s.setDown 3
+        s.set_down 3
         assert_equal [ "\\12|",\
                        " \\ |",\
                        "_3\\|" ],\
                      s.to_s
-        s.setDown 34
+        s.set_down 34
         assert_equal [ "\\12|",\
                        " \\ |",\
                        "34\\|" ],\

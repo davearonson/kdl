@@ -19,7 +19,7 @@
 # Space may have an ACROSS sum, a DOWN sum, or both, but should not have
 # neither.
 
-require 'Set'
+require 'set'
 
 module Kakuro
 
@@ -50,37 +50,37 @@ module Kakuro
       @y = y
     end
 
-    def getDir
+    def get_dir
       @dir
     end
 
-    def getLen
+    def get_len
       @len
     end
 
     # needed only for testing; maybe some way around it?
-    def getSpaces
+    def get_spaces
       @spaces
     end
 
     # needed only for testing; maybe some way around it?
-    def getSpace i
+    def get_space i
       @spaces[i]
     end
 
-    def getSum
+    def get_sum
       @sum
     end
 
-    def getX
+    def get_x
       @x
     end
 
-    def getY
+    def get_y
       @y
     end
 
-    def setSpace idx, space
+    def set_space idx, space
       @spaces[idx] = space
     end
 
@@ -126,39 +126,39 @@ module Kakuro
           # TODO: reject invalid directions
           len = parts[3].to_i
           sum = parts[4].to_i
-          addProblem x, y, dir, len, sum
+          add_problem x, y, dir, len, sum
         end
         f.close
-        absorbProblems
+        absorb_problems
       end
     end
 
-    def absorbProblems
+    def absorb_problems
       @spaces = Array.new(@columns * @rows) { Space.new }
       @problems.each { |p|
-        xInc = p.getDir == ACROSS ? 1 : 0
-        yInc = p.getDir == DOWN ? 1 : 0
-        p.getLen.times { |i|
-          s = getSpace(p.getX + i * xInc, p.getY + i * yInc)
-          s.setKind Space::DIGIT
+        xInc = p.get_dir == ACROSS ? 1 : 0
+        yInc = p.get_dir == DOWN ? 1 : 0
+        p.get_len.times { |i|
+          s = get_space(p.get_x + i * xInc, p.get_y + i * yInc)
+          s.set_kind Space::DIGIT
           # TODO: there's probably a more rubyish way to do this....
-          s.setAcross p if xInc > 0
-          s.setDown p if yInc > 0
-          s.setDigits AllDigits.clone
+          s.set_across p if xInc > 0
+          s.set_down p if yInc > 0
+          s.set_digits AllDigits.clone
           # TODO: make sure the one we're setting, isn't ALREADY set
           # with a different problem in this direction!
-          p.setSpace i, s
+          p.set_space i, s
         }
-        s = getSpace(p.getX - xInc, p.getY - yInc)
-        s.setKind Space::HEADER
+        s = get_space(p.get_x - xInc, p.get_y - yInc)
+        s.set_kind Space::HEADER
         # TODO: hmmm, there's probably a more rubyish way to do this....
-        s.setAcross p.getSum if xInc > 0
-        s.setDown p.getSum if yInc > 0
+        s.set_across p.get_sum if xInc > 0
+        s.set_down p.get_sum if yInc > 0
         # TODO: make sure no overlap except crossing on digits
       }
     end
 
-    def addProblem x, y, dir, len, sum
+    def add_problem x, y, dir, len, sum
       # TODO: make sure args are reasonable
       # (e.g., x & y > 0, dir one or other, len>1 & <10, sum OK in len)
       high = (dir == ACROSS ? x + len : x + 1)
@@ -168,29 +168,29 @@ module Kakuro
       @problems.push Problem.new(x, y, dir, len, sum)
     end
 
-    def getColumns
+    def get_columns
       @columns
     end
 
-    def getProblem i
+    def get_problem i
       @problems[i]
     end
 
-    def getProblems
+    def get_problems
       @problems
     end
 
-    def getRows
+    def get_rows
       @rows
     end
 
-    def getSpace x, y
+    def get_space x, y
       i = y * @columns + x
       @spaces[i]
     end
 
     # needed only for testing; maybe some way around it?
-    def getSpaces
+    def get_spaces
       @spaces
     end
 
@@ -202,7 +202,7 @@ module Kakuro
         lines = ["|","|","|"]
         @columns.times { |x|
           # remember, Space.to_s returns an ARRAY!
-          spStr = getSpace(x, y).to_s withDigits
+          spStr = get_space(x, y).to_s withDigits
           lines.size.times { |i| lines[i] += spStr[i] }
         }
         result += lines
@@ -240,19 +240,19 @@ module Kakuro
           @digits = AllDigits.clone if kind == DIGIT
       end
 
-      def getAcross
+      def get_across
           @across
       end
 
-      def getDown
+      def get_down
           @down
       end
 
-      def getDigits
+      def get_digits
           @digits
       end
 
-      def getKind
+      def get_kind
           @kind
       end
 
@@ -292,19 +292,19 @@ module Kakuro
           rep # yes, I do mean to have it return an ARRAY of strings!
       end
 
-      def setAcross across
+      def set_across across
           @across = across
       end
 
-      def setDigits digits
+      def set_digits digits
           @digits = digits
       end
 
-      def setDown down
+      def set_down down
           @down = down
       end
 
-      def setKind kind
+      def set_kind kind
           @kind = kind
       end
 
