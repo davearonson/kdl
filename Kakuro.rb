@@ -40,7 +40,7 @@ module Kakuro
 
   public
 
-    def initialize x, y, dir, len, sum
+    def initialize(x, y, dir, len, sum)
       # TODO: reject invalid values!  Throw exception?
       @dir = dir
       @len = len
@@ -80,7 +80,7 @@ module Kakuro
       @y
     end
 
-    def set_space idx, space
+    def set_space(idx, space)
       @spaces[idx] = space
     end
 
@@ -108,7 +108,7 @@ module Kakuro
 
   public
 
-    def initialize name=nil
+    def initialize(name=nil)
       @columns = 0
       @rows = 0
       @problems = []
@@ -158,7 +158,7 @@ module Kakuro
       }
     end
 
-    def add_problem x, y, dir, len, sum
+    def add_problem(x, y, dir, len, sum)
       # TODO: make sure args are reasonable
       # (e.g., x & y > 0, dir one or other, len>1 & <10, sum OK in len)
       high = (dir == ACROSS ? x + len : x + 1)
@@ -172,7 +172,7 @@ module Kakuro
       @columns
     end
 
-    def get_problem i
+    def get_problem(i)
       @problems[i]
     end
 
@@ -184,7 +184,7 @@ module Kakuro
       @rows
     end
 
-    def get_space x, y
+    def get_space(x, y)
       i = y * @columns + x
       @spaces[i]
     end
@@ -194,7 +194,7 @@ module Kakuro
       @spaces
     end
 
-    def to_s withDigits=false
+    def to_s(withDigits=false)
       result = ['_']
       # TODO: isn't there some way to say just x.times str?
       @columns.times { result[0] += '____' }
@@ -233,7 +233,7 @@ module Kakuro
       DIGIT = 2
       HEADER = 3
 
-      def initialize kind=BLANK, across=nil, down=nil
+      def initialize(kind=BLANK, across=nil, down=nil)
           @across = across
           @down = down
           @kind = kind
@@ -256,7 +256,7 @@ module Kakuro
           @kind
       end
 
-      def to_s withDigits=false
+      def to_s(withDigits=false)
           rep = [ '', '', '' ]
           if @kind == DIGIT
               if withDigits
@@ -292,19 +292,19 @@ module Kakuro
           rep # yes, I do mean to have it return an ARRAY of strings!
       end
 
-      def set_across across
+      def set_across(across)
           @across = across
       end
 
-      def set_digits digits
+      def set_digits(digits)
           @digits = digits
       end
 
-      def set_down down
+      def set_down(down)
           @down = down
       end
 
-      def set_kind kind
+      def set_kind(kind)
           @kind = kind
       end
 
