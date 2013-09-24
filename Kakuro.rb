@@ -136,10 +136,10 @@ module Kakuro
 
     def absorb_problems
       @spaces = Array.new(@columns * @rows) { Space.new }
-      @problems.each { |p|
+      @problems.each do |p|
         xInc = p.get_dir == ACROSS ? 1 : 0
         yInc = p.get_dir == DOWN ? 1 : 0
-        p.get_len.times { |i|
+        p.get_len.times do |i|
           s = get_space(p.get_x + i * xInc, p.get_y + i * yInc)
           s.set_kind Space::DIGIT
           # TODO: there's probably a more rubyish way to do this....
@@ -149,14 +149,14 @@ module Kakuro
           # TODO: make sure the one we're setting, isn't ALREADY set
           # with a different problem in this direction!
           p.set_space i, s
-        }
+        end
         s = get_space(p.get_x - xInc, p.get_y - yInc)
         s.set_kind Space::HEADER
         # TODO: hmmm, there's probably a more rubyish way to do this....
         s.set_across p.get_sum if xInc > 0
         s.set_down p.get_sum if yInc > 0
         # TODO: make sure no overlap except crossing on digits
-      }
+      end
     end
 
     def add_problem(x, y, dir, len, sum)
@@ -199,15 +199,15 @@ module Kakuro
       result = ['_']
       # TODO: isn't there some way to say just x.times str?
       @columns.times { result[0] += '____' }
-      @rows.times { |y|
+      @rows.times do |y|
         lines = ['|', '|', '|']
-        @columns.times { |x|
+        @columns.times do |x|
           # remember, Space.to_s returns an ARRAY!
           spStr = get_space(x, y).to_s withDigits
           lines.size.times { |i| lines[i] += spStr[i] }
-        }
+        end
         result += lines
-      }
+      end
       result.join "\n"
     end
 
