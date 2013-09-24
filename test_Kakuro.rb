@@ -4,7 +4,7 @@ require_relative './Kakuro'
 
 require 'test/unit'
 
-class TC_MyTest < Test::Unit::TestCase
+class TCMyTest < Test::Unit::TestCase
 
     # def setup
     # end
@@ -27,19 +27,19 @@ class TC_MyTest < Test::Unit::TestCase
 
     # NORMAL CONDITIONS
 
-    def test_Kakuro_Problem
+    def test_kakuro_problem
         p = Kakuro::Problem.new 1, 2, Kakuro::DOWN, 3, 6
         helper_inspectProblem p, 1, 2, Kakuro::DOWN, 3, 6
     end
 
-    def test_Kakuro_Puzzle_initialize
+    def test_kakuro_puzzle_initialize
         p = Kakuro::Puzzle.new
         assert_equal  0, p.get_columns
         assert_equal [], p.get_problems
         assert_equal  0, p.get_rows
     end
 
-    def test_Kakuro_Puzzle_addProblem
+    def test_kakuro_puzzle_addProblem
         p = Kakuro::Puzzle.new
         p.add_problem 1, 2, Kakuro::DOWN, 3, 6
         assert_equal 1, p.get_problems.size
@@ -52,7 +52,7 @@ class TC_MyTest < Test::Unit::TestCase
         helper_inspectProblem p.get_problem(0), 1, 2, Kakuro::DOWN, 3, 6
     end
 
-    def test_Kakuro_Puzzle_fromFile_and_to_kdl
+    def test_kakuro_puzzle_from_file_and_to_kdl
         # put in some funky spacing to make sure it doesn't matter
         old_kdl = [ " 2  1 - 3  6", \
                     "2  2 - 3	7", \
@@ -87,7 +87,7 @@ class TC_MyTest < Test::Unit::TestCase
         assert_equal old_kdl.size, new_kdl.size
     end
 
-    def test_Kakuro_Puzzle_to_s
+    def test_kakuro_puzzle_to_s
         f = File.new "/tmp/test_Kakuro.tmp", "w"
         f.write " 2  2 - 2  5\n"
         f.write " 1  3 - 3  7\n"
@@ -135,7 +135,7 @@ class TC_MyTest < Test::Unit::TestCase
             , puzz.to_s(true)
     end
 
-    def test_Kakuro_Space_to_s
+    def test_kakuro_space_to_s
         s = Kakuro::Space.new
         assert_equal [ "***|",\
                        "***|",\
