@@ -64,7 +64,7 @@ module Kakuro
     end
 
     # needed only for testing; maybe some way around it?
-    def get_space i
+    def get_space(i)
       @spaces[i]
     end
 
