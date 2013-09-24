@@ -23,7 +23,7 @@ require 'set'
 
 module Kakuro
 
-  AllDigits = Set.new([1,2,3,4,5,6,7,8,9])
+  AllDigits = Set.new([1, 2, 3, 4, 5, 6, 7, 8, 9])
 
   ACROSS = 1
   DOWN = 2
@@ -117,7 +117,7 @@ module Kakuro
         while not f.eof?
           line = f.readline.strip
           next if line == ''
-          next if line[0,1] == '#'
+          next if line[0, 1] == '#'
           parts = line.split ' '
           # TODO MAYBE: hmmm, there MUST be a "cooler" way to do this...
           x = parts[0].to_i
@@ -199,7 +199,7 @@ module Kakuro
       # TODO: isn't there some way to say just x.times str?
       @columns.times { result[0] += '____' }
       @rows.times { |y|
-        lines = ['|','|','|']
+        lines = ['|', '|', '|']
         @columns.times { |x|
           # remember, Space.to_s returns an ARRAY!
           spStr = get_space(x, y).to_s withDigits
