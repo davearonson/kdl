@@ -85,12 +85,13 @@ module Kakuro
     end
 
     def to_kdl
-      [ '%2d' % @x, \
-        '%2d' % @y, \
-        '%s' % @dir == DOWN ? '|' : '-', \
-        '%d' % @len, \
-        '%2d' % @sum ]\
-        .join ' '
+      [
+        '%2d' % @x,
+        '%2d' % @y,
+        '%s' % @dir == DOWN ? '|' : '-',
+        '%d' % @len,
+        '%2d' % @sum
+      ].join ' '
     end
 
   end # class Problem
@@ -257,7 +258,7 @@ module Kakuro
       end
 
       def to_s(withDigits=false)
-          rep = [ '', '', '' ]
+          rep = ['', '', '']
           if @kind == DIGIT
               if withDigits
                   if @digits.size == 1
@@ -273,7 +274,7 @@ module Kakuro
                       }
                   end
               else
-                  rep = [ '   |', '   |', '___|' ]
+                  rep = ['   |', '   |', '___|']
               end
           elsif @kind == BLANK
               rep[0] = rep[1] = rep[2] = '***|'
