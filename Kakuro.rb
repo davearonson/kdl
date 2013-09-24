@@ -85,11 +85,11 @@ module Kakuro
     end
 
     def to_kdl
-      [ "%2d" % @x, \
-        "%2d" % @y, \
-        "%s" % @dir == DOWN ? '|' : '-', \
-        "%d" % @len, \
-        "%2d" % @sum ]\
+      [ '%2d' % @x, \
+        '%2d' % @y, \
+        '%s' % @dir == DOWN ? '|' : '-', \
+        '%d' % @len, \
+        '%2d' % @sum ]\
         .join ' '
     end
 
@@ -279,7 +279,7 @@ module Kakuro
               rep[0] = rep[1] = rep[2] = '***|'
           elsif @kind == HEADER
               rep[0] = '\\  |' if @across == nil
-              rep[0] = "\\%2d|" % @across if @across != nil
+              rep[0] = '\\%2d|' % @across if @across != nil
               rep[1] = ' \\ |'
               if @down == nil
                   rep[2] = '__\\|'
