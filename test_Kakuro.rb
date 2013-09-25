@@ -4,6 +4,7 @@ require_relative './Kakuro'
 
 require 'test/unit'
 
+# Unit Test for Puzzle and Space
 class TCMyTest < Test::Unit::TestCase
 
     # def setup
@@ -15,7 +16,7 @@ class TCMyTest < Test::Unit::TestCase
 
     # helpers
 
-    def helper_inspectProblem prob, x, y, dir, len, sum
+    def helper_inspectproblem prob, x, y, dir, len, sum
         assert_equal x, prob.get_x
         assert_equal y, prob.get_y
         assert_equal dir, prob.get_dir
@@ -39,7 +40,7 @@ class TCMyTest < Test::Unit::TestCase
         assert_equal  0, p.get_rows
     end
 
-    def test_kakuro_puzzle_addProblem
+    def test_kakuro_puzzle_addproblem
         p = Kakuro::Puzzle.new
         p.add_problem 1, 2, Kakuro::DOWN, 3, 6
         assert_equal 1, p.get_problems.size
