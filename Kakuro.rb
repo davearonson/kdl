@@ -269,9 +269,9 @@ module Kakuro
                       rep[0] = '   |'
                       rep[1] = '   |'
                       rep[2] = '___|'
-                      @digits.each { |digit|
+                      @digits.each do |digit|
                           rep[(digit-1)/3][(digit-1)%3] = digit.to_s
-                      }
+                      end
                   end
               else
                   rep = ['   |', '   |', '___|']
