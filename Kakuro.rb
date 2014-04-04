@@ -19,304 +19,295 @@
 # Space may have an ACROSS sum, a DOWN sum, or both, but should not have
 # neither.
 
-
-require 'Set'
-
+require 'set'
 
 module Kakuro
 
+  AllDigits = Set.new([1, 2, 3, 4, 5, 6, 7, 8, 9])
 
-    AllDigits = Set.new([1,2,3,4,5,6,7,8,9])
+  ACROSS = 1
+  DOWN = 2
+
+  class Problem
+
+  protected
+    @dir
+    @len
+    @spaces
+    @sum
+    @x
+    @y
+
+  public
+
+    def initialize(x, y, dir, len, sum)
+      # TODO: reject invalid values!  Throw exception?
+      @dir = dir
+      @len = len
+      @spaces = Array.new(len)
+      @sum = sum
+      @x = x
+      @y = y
+    end
+
+    def get_dir
+      @dir
+    end
+
+    def get_len
+      @len
+    end
+
+    # needed only for testing; maybe some way around it?
+    def get_spaces
+      @spaces
+    end
+
+    # needed only for testing; maybe some way around it?
+    def get_space(i)
+      @spaces[i]
+    end
+
+    def get_sum
+      @sum
+    end
+
+    def get_x
+      @x
+    end
+
+    def get_y
+      @y
+    end
+
+    def set_space(idx, space)
+      @spaces[idx] = space
+    end
+
+    def to_kdl
+      [
+        '%2d' % @x,
+        '%2d' % @y,
+        '%s' % @dir == DOWN ? '|' : '-',
+        '%d' % @len,
+        '%2d' % @sum
+      ].join ' '
+    end
+
+  end # class Problem
 
 
-    ACROSS = 1
-    DOWN = 2
 
+  class Puzzle
 
+  protected
 
-    class Problem
+    @columns
+    @problems
+    @rows
+    @spaces
 
-    protected
+  public
 
-        @dir
-        @len
-        @spaces
-        @sum
-        @x
-        @y
-    
-    public
-
-        def initialize x, y, dir, len, sum
-            # TODO: reject invalid values!  Throw exception?
-            @dir = dir
-            @len = len
-            @spaces = Array.new(len)
-            @sum = sum
-            @x = x
-            @y = y
+    def initialize(name=nil)
+      @columns = 0
+      @rows = 0
+      @problems = []
+      if name != nil
+        f = File.new name, 'r'
+        while not f.eof?
+          line = f.readline.strip
+          next if line == ''
+          next if line[0, 1] == '#'
+          parts = line.split ' '
+          # TODO MAYBE: hmmm, there MUST be a "cooler" way to do this...
+          x = parts[0].to_i
+          y = parts[1].to_i
+          dir = parts[2] == '-' ? ACROSS : DOWN
+          # TODO: reject invalid directions
+          len = parts[3].to_i
+          sum = parts[4].to_i
+          add_problem x, y, dir, len, sum
         end
+        f.close
+        absorb_problems
+      end
+    end
 
-        def getDir
-            @dir
+    def absorb_problems
+      @spaces = Array.new(@columns * @rows) { Space.new }
+      @problems.each do |p|
+        xInc = p.get_dir == ACROSS ? 1 : 0
+        yInc = p.get_dir == DOWN ? 1 : 0
+        p.get_len.times do |i|
+          s = get_space(p.get_x + i * xInc, p.get_y + i * yInc)
+          s.set_kind Space::DIGIT
+          # TODO: there's probably a more rubyish way to do this....
+          s.set_across p if xInc > 0
+          s.set_down p if yInc > 0
+          s.set_digits AllDigits.clone
+          # TODO: make sure the one we're setting, isn't ALREADY set
+          # with a different problem in this direction!
+          p.set_space i, s
         end
+        s = get_space(p.get_x - xInc, p.get_y - yInc)
+        s.set_kind Space::HEADER
+        # TODO: hmmm, there's probably a more rubyish way to do this....
+        s.set_across p.get_sum if xInc > 0
+        s.set_down p.get_sum if yInc > 0
+        # TODO: make sure no overlap except crossing on digits
+      end
+    end
 
-        def getLen
-            @len
+    def add_problem(x, y, dir, len, sum)
+      # TODO: make sure args are reasonable
+      # (e.g., x & y > 0, dir one or other, len>1 & <10, sum OK in len)
+      high = (dir == ACROSS ? x + len : x + 1)
+      @columns = high if @columns < high
+      high = (dir == DOWN ? y + len : y + 1)
+      @rows = high if @rows < high
+      @problems.push Problem.new(x, y, dir, len, sum)
+    end
+
+    def get_columns
+      @columns
+    end
+
+    def get_problem(i)
+      @problems[i]
+    end
+
+    def get_problems
+      @problems
+    end
+
+    def get_rows
+      @rows
+    end
+
+    def get_space(x, y)
+      i = y * @columns + x
+      @spaces[i]
+    end
+
+    # needed only for testing; maybe some way around it?
+    def get_spaces
+      @spaces
+    end
+
+    def to_s(withDigits=false)
+      result = ['_']
+      # TODO: isn't there some way to say just x.times str?
+      @columns.times { result[0] += '____' }
+      @rows.times do |y|
+        lines = ['|', '|', '|']
+        @columns.times do |x|
+          # remember, Space.to_s returns an ARRAY!
+          spStr = get_space(x, y).to_s withDigits
+          lines.size.times { |i| lines[i] += spStr[i] }
         end
+        result += lines
+      end
+      result.join "\n"
+    end
 
-        # needed only for testing; maybe some way around it?
-        def getSpaces
-            @spaces
-        end
+    def to_kdl
+      @problems.map { |p| p.to_kdl }.join "\n"
+    end
 
-        # needed only for testing; maybe some way around it?
-        def getSpace i
-            @spaces[i]
-        end
-
-        def getSum
-            @sum
-        end
-
-        def getX
-            @x
-        end
-
-        def getY
-            @y
-        end
-
-        def setSpace idx, space
-            @spaces[idx] = space
-        end
-
-        def to_kdl
-            [ "%2d" % @x, \
-              "%2d" % @y, \
-              "%s" % @dir == DOWN ? '|' : '-', \
-              "%d" % @len, \
-              "%2d" % @sum ]\
-              .join ' '
-        end
-
-    end # class Problem
+  end # class Puzzle
 
 
 
-    class Puzzle
+  class Space
 
-    protected
+  protected
 
-        @columns
-        @problems
-        @rows
-        @spaces
+      @across
+      @digits
+      @down
+      @kind
 
-    public
+  public
 
-        def initialize name=nil
-            @columns = 0
-            @rows = 0
-            @problems = []
-            if name != nil
-                f = File.new name, "r"
-                while not f.eof?
-                    line = f.readline.strip
-                    next if line == ''
-                    next if line[0,1] == '#'
-                    parts = line.split ' '
-                    # TODO MAYBE: hmmm, there MUST be a "cooler" way to do this...
-                    x = parts[0].to_i
-                    y = parts[1].to_i
-                    dir = parts[2] == '-' ? ACROSS : DOWN
-                    # TODO: reject invalid directions
-                    len = parts[3].to_i
-                    sum = parts[4].to_i
-                    addProblem x, y, dir, len, sum
-                end
-                f.close
-                absorbProblems
-            end
-        end
+      BLANK = 1
+      DIGIT = 2
+      HEADER = 3
 
-        def absorbProblems
-            @spaces = Array.new(@columns * @rows) { Space.new }
-            @problems.each { |p|
-                xInc = p.getDir == ACROSS ? 1 : 0
-                yInc = p.getDir == DOWN ? 1 : 0
-                p.getLen.times { |i|
-                    s = getSpace(p.getX + i * xInc, p.getY + i * yInc)
-                    s.setKind Space::DIGIT
-                    # TODO: there's probably a more rubyish way to do this....
-                    s.setAcross p if xInc > 0
-                    s.setDown p if yInc > 0
-                    s.setDigits AllDigits.clone
-                    # TODO: make sure the one we're setting, isn't ALREADY set
-                    # with a different problem in this direction!
-                    p.setSpace i, s
-                }
-                s = getSpace(p.getX - xInc, p.getY - yInc)
-                s.setKind Space::HEADER
-                # TODO: hmmm, there's probably a more rubyish way to do this....
-                s.setAcross p.getSum if xInc > 0
-                s.setDown p.getSum if yInc > 0
-                # TODO: make sure no overlap except crossing on digits
-            }
-        end
+      def initialize(kind=BLANK, across=nil, down=nil)
+          @across = across
+          @down = down
+          @kind = kind
+          @digits = AllDigits.clone if kind == DIGIT
+      end
 
-        def addProblem x, y, dir, len, sum
-            # TODO: make sure args are reasonable
-            # (e.g., x & y > 0, dir one or other, len>1 & <10, sum OK in len)
-            high = (dir == ACROSS ? x + len : x + 1)
-            @columns = high if @columns < high
-            high = (dir == DOWN ? y + len : y + 1)
-            @rows = high if @rows < high
-            @problems.push Problem.new(x, y, dir, len, sum)
-        end
+      def get_across
+          @across
+      end
 
-        def getColumns
-            @columns
-        end
+      def get_down
+          @down
+      end
 
-        def getProblem i
-            @problems[i]
-        end
+      def get_digits
+          @digits
+      end
 
-        def getProblems
-            @problems
-        end
+      def get_kind
+          @kind
+      end
 
-        def getRows
-            @rows
-        end
+      def to_s(withDigits=false)
+          rep = ['', '', '']
+          if @kind == DIGIT
+              if withDigits
+                  if @digits.size == 1
+                      rep[0] = ' | |'
+                      rep[1] = '-' + @digits.to_a[0].to_s + '-|'
+                      rep[2] = '_|_|'
+                  else
+                      rep[0] = '   |'
+                      rep[1] = '   |'
+                      rep[2] = '___|'
+                      @digits.each do |digit|
+                          rep[(digit-1)/3][(digit-1)%3] = digit.to_s
+                      end
+                  end
+              else
+                  rep = ['   |', '   |', '___|']
+              end
+          elsif @kind == BLANK
+              rep[0] = rep[1] = rep[2] = '***|'
+          elsif @kind == HEADER
+              rep[0] = '\\  |' if @across == nil
+              rep[0] = '\\%2d|' % @across if @across != nil
+              rep[1] = ' \\ |'
+              if @down == nil
+                  rep[2] = '__\\|'
+              elsif @down < 10
+                  rep[2] = "_%d\\|" % @down
+              else
+                  rep[2] = "%d\\|" % @down
+              end
+          end
+          rep # yes, I do mean to have it return an ARRAY of strings!
+      end
 
-        def getSpace x, y
-            i = y * @columns + x
-            @spaces[i]
-        end
+      def set_across(across)
+          @across = across
+      end
 
-        # needed only for testing; maybe some way around it?
-        def getSpaces
-            @spaces
-        end
+      def set_digits(digits)
+          @digits = digits
+      end
 
-        def to_s withDigits=false
-            result = ["_"]
-            # TODO: isn't there some way to say just x.times str?
-            @columns.times { result[0] += "____" }
-            @rows.times { |y|
-                lines = ["|","|","|"]
-                @columns.times { |x|
-                    # remember, Space.to_s returns an ARRAY!
-                    spStr = getSpace(x, y).to_s withDigits
-                    lines.size.times { |i| lines[i] += spStr[i] }
-                }
-                result += lines
-            }
-            result.join "\n"
-        end
+      def set_down(down)
+          @down = down
+      end
 
-        def to_kdl
-            @problems.map { |p| p.to_kdl }.join "\n"
-        end
+      def set_kind(kind)
+          @kind = kind
+      end
 
-    end # class Puzzle
-
-
-
-    class Space
-    
-    protected
-
-        @across
-        @digits
-        @down
-        @kind
-
-    public
-
-        BLANK = 1
-        DIGIT = 2
-        HEADER = 3
-
-        def initialize kind=BLANK, across=nil, down=nil
-            @across = across
-            @down = down
-            @kind = kind
-            @digits = AllDigits.clone if kind == DIGIT
-        end
-
-        def getAcross
-            @across
-        end
-
-        def getDown
-            @down
-        end
-
-        def getDigits
-            @digits
-        end
-
-        def getKind
-            @kind
-        end
-
-        def to_s withDigits=false
-            rep = [ "", "", "" ]
-            if @kind == DIGIT
-                if withDigits
-                    if @digits.size == 1
-                        rep[0] = " | |"
-                        rep[1] = "-" + @digits.to_a[0].to_s + "-|"
-                        rep[2] = "_|_|"
-                    else
-                        rep[0] = "   |"
-                        rep[1] = "   |"
-                        rep[2] = "___|"
-                        @digits.each { |digit|
-                            rep[(digit-1)/3][(digit-1)%3] = digit.to_s
-                        }
-                    end
-                else
-                    rep = [ "   |", "   |", "___|" ]
-                end
-            elsif @kind == BLANK
-                rep[0] = rep[1] = rep[2] = '***|'
-            elsif @kind == HEADER
-                rep[0] = "\\  |" if @across == nil
-                rep[0] = "\\%2d|" % @across if @across != nil
-                rep[1] = " \\ |"
-                if @down == nil
-                    rep[2] = "__\\|"
-                elsif @down < 10
-                    rep[2] = "_%d\\|" % @down
-                else
-                    rep[2] = "%d\\|" % @down
-                end
-            end
-            rep # yes, I do mean to have it return an ARRAY of strings!
-        end
-
-        def setAcross across
-            @across = across
-        end
-
-        def setDigits digits
-            @digits = digits
-        end
-
-        def setDown down
-            @down = down
-        end
-
-        def setKind kind
-            @kind = kind
-        end
-
-    end # class Space
-
-
-
+  end # class Space
 end # module Kakuro
